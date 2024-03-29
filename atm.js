@@ -1,94 +1,79 @@
 #! usr/bin/env node
 import inquirer from "inquirer";
-let CurrentAcc = 10000;
-let SavingAcc = 20000;
-let try1 = 0;
-let ans = true;
-
-const answers = await inquirer.prompt([{ message: "Enter Your PIN", type: "number", name: "pin" },
-{ message: '1:Balance Inquiry \n2:Cash Withdrawl \n3:Cash Deposit \n', type: "number", name: "task" },
-{ message: '1:Current Account \n2:Saving Account \n', type: "number", name: "accType" },
-{ message: 'Enter Amount\n', type: "number", name: "cash" },
-{ message: "DO you want to try Again? yes(1) no(0)", type: "number", name: "retry" },
-{ message: "Do you want to proceed more yes(1) no(0) ", type: "number", name: "cancel" }       
-]);
-
-while (try1 <= 3 && ans) {
-  
+let CurrentBal = 10000;
+let SavingBal = 20000;
+let trials = 0;
+let notExit = true;
+while (trials < 3 && notExit === true) {
+    const answers = await inquirer.prompt([{ message: "Enter Your PIN", type: "number", name: "pin" }]);
     if (answers.pin === 1217) {
         console.log("Your PIN is correct\n");
-        console.log(answers.task);
-
-        if (answers.task === 1) {
-            console.log(answers.accType);
-            if (answers.accType === 1) {
-                console.log("Your balance is ", CurrentAcc, "\n");
-            }
-            else if (answers.accType === 2) {
-                console.log("Your balance is ", SavingAcc, "\n");
+        const answer = await inquirer.prompt([{ message: "Kindly Select Option", type: "list", name: "task", choices: ["Balance Inquiry", "Cash Withdraw", "Cash Deposit"] }]);
+        if (answer.task === "Balance Inquiry") {
+            const answer = await inquirer.prompt([{ message: "Kindly Select Option", type: "list", name: "account", choices: ["Current Account", "Saving Account"] }]);
+            if (answer.account === "Current Account") {
+                console.log("Your Current Account Balance is", CurrentBal);
             }
             else {
-                console.log("Kindly Select correct option!\n");
+                console.log("Your Saving Account Balance is", SavingBal);
             }
+            // const answers = inquirer.prompt([{message: "Do you want to proceed to more options",type: "confirm",name: "proceed"}]);
+            // if(answer.proceed){
+            //     notExit = false;
+            // }          
         }
-        else if (answers.task === 2) {
-            console.log(answers.accType);
-            if (answers.accType === 1) {
-                console.log(answers.cash);
-                if (answers.cash <= CurrentAcc) {
-                    CurrentAcc = CurrentAcc - answers.cash;
-                    console.log("Your remaining balance is ", CurrentAcc, "\n");
+        else if (answer.task === "Cash Withdraw") {
+            const answer = await inquirer.prompt([{ message: "Kindly Select Option", type: "list", name: "account", choices: ["Current Account", "Saving Account"] }]);
+            if (answer.account === "Current Account") {
+                const answer = await inquirer.prompt([{ message: "Enter Amount", type: "number", name: "amount" }]);
+                if (answer.amount <= CurrentBal) {
+                    console.log(`Your Current Account Balance is ${CurrentBal - answer.amount}`);
                 }
                 else {
-                    console.log("Insufficient Balance\n");
+                    console.log("Insufficient Balance");
                 }
             }
-            else if (answers.accType === 2) {
-                console.log(answers.cash);
-                if (answers.cash <= SavingAcc) {
-                    SavingAcc = SavingAcc - answers.cash;
-                    console.log("Your remaining balance is ", SavingAcc, "\n");
+            else {
+                const answer = await inquirer.prompt([{ message: "Enter Amount", type: "number", name: "amount" }]);
+                if (answer.amount <= SavingBal) {
+                    console.log(`Your Current Account Balance is ${SavingBal - answer.amount}`);
                 }
                 else {
-                    console.log("Insufficient Balance\n");
+                    console.log("Insufficient Balance");
                 }
             }
-            else {
-                console.log("Kindly Select correct option!\n");
-            }
+            //     const answers = inquirer.prompt([{message: "Do you want to proceed to more options",type: "confirm",name: "proceed"}]);
+            //     if(answer.proceed){
+            //         notExit = false;
+            //     } 
         }
-        else if (answers.task === 3) {
-            console.log(answers.accType);
-            if (answers.accType === 1) {
-                console.log(answers.cash);
-                CurrentAcc = CurrentAcc + answers.cash;
-                console.log("Your new balance is ", CurrentAcc, "\n");
-            }
-            else if (answers.accType === 2) {
-                console.log(answers.cash);
-                SavingAcc = SavingAcc + answers.cash;
-                console.log("Your new balance is ", SavingAcc, "\n");
+        else if (answer.task === "Cash Deposit") {
+            const answer = await inquirer.prompt([{ message: "Kindly Select Option", type: "list", name: "account", choices: ["Current Account", "Saving Account"] }]);
+            if (answer.account === "Current Account") {
+                const answer = await inquirer.prompt([{ message: "Enter Amount", type: "number", name: "amount" }]);
+                CurrentBal = CurrentBal + answer.amount;
+                console.log("Your New Current Account Balance is", CurrentBal);
             }
             else {
-                console.log("Kindly Select correct option!\n");
+                const answer = await inquirer.prompt([{ message: "Enter Amount", type: "number", name: "amount" }]);
+                SavingBal = SavingBal + answer.amount;
+                console.log("Your New Saving Account Balance is", SavingBal);
             }
         }
-        else {
-            console.log("Kindly Select correct option!\n");
-        }
-    console.log(answers.cancel);
-    if (answers.cancel === 0) {
-        ans = false;
-    }
-
+        // const answers = inquirer.prompt([{message: "Do you want to proceed to more options",type: "confirm",name: "proceed"}]);
+        // if(answer.proceed){
+        //     notExit = false;
+        // } 
+        notExit = false;
     }
     else {
-        console.log("Incorrect Pin!");
-        if (answers.retry === 1) {
-            try1++;
+        console.log("Your PIN is incorrect\n");
+        const answer = await inquirer.prompt([{ message: "Do You Want To Try Again", type: "confirm", name: "try" }]);
+        if (answer.try) {
+            trials++;
         }
         else {
-            ans = false;
+            notExit = false;
         }
     }
 }
